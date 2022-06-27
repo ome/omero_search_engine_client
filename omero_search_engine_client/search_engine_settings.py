@@ -31,7 +31,7 @@ SEARCH_ENGINE_SETTINGS = {
          None,
          str_slash,
          ("Base URL for elastic search API endpoints "
-          "E.g. https://server/searchengineapi/api/v1")],
+          "E.g. searchengineapi/api/v1 or can be an absolute URL")],
 }
 
 process_custom_settings(sys.modules[__name__], 'SEARCH_ENGINE_SETTINGS')

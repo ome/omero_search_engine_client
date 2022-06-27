@@ -1,0 +1,58 @@
+{% extends base_template %} {% block content %}
+<title>OMERO search engine client</title>
+
+<!-- Need jQuery and jQuery UI for auto-complete -->
+<link
+  rel="stylesheet"
+  href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css"
+/>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+<script src="{% static 'omero_search_engine_client/js/omero_search_form.js' %}"></script>
+<link
+  rel="stylesheet"
+  href="{% static 'omero_search_engine_client/css/search_form_styles.css' %}"
+/>
+
+<h1>OMERO search engine client</h1>
+
+<form id="search_form"></form>
+
+<table id="results_table"></table>
+
+<script>
+  const SEARCH_ENGINE_URL = "{{ search_engine_url }}";
+
+  $(function () {
+    const searchForm = new OmeroSearchForm(
+      "search_form",
+      SEARCH_ENGINE_URL,
+      "results_table"
+    );
+
+
+    const searchParams = new URLSearchParams(window.location.search.substr(1));
+    if (searchParams.has('query')) {
+      query = searchParams.get('query')
+      if (query && query.includes(":")) {
+        // Use first ":" to split Key:Value...
+        let colonIndex = query.indexOf(":");
+        let key = query.substring(0, colonIndex);
+        let value = query.substring(colonIndex + 1);
+        console.log("Key", key, "Value", value);
+        searchForm.on("ready", function () {
+          searchForm.setQuery({ key, value });
+          searchForm.submitSearch();
+        });
+      }
+    }
+
+    // We can subscribe for results (but they will also be rendered in the table)
+    searchForm.on("results", function (event, data) {
+      console.log("RESULTS", event, data);
+    });
+  });
+</script>
+
+{% endblock %}

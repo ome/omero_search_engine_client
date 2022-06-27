@@ -4,25 +4,47 @@
   padding: 5px;
   border-radius: 5px;
   margin: 5px;
+  position: relative;
+  margin-top: 25px;
 }
 .and_clause * {
   box-sizing: border-box;
 }
-.search_or_row {
+.and_clause:before {
+  position: absolute;
+  content: "AND";
+  top: -19px;
+  font-size: 14px;
+  left: 0;
+  margin-left: 5px;
+}
+.and_clause:first-child {
+  margin-top: 5px;
+}
+.and_clause:first-child:before {
+  display: none;
+}
+.or_clause {
   display: flex;
   align-items: flex-end;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   gap: 5px;
 }
-.search_or_row > div {
+.or_clause > div {
   flex: 1;
 }
-.search_or_row:first-child .or {
-  visibility: visible;
+.or_clause:first-child .or {
+  visibility: hidden;
 }
-.search_or_row .or,
-.search_or_row .search_condition {
+.or_clause label{
+  display: none;
+}
+.or_clause:first-child label{
+  display: block;
+}
+.or_clause .no_expand,
+.or_clause .search_condition {
   flex: 0;
 }
 select.condition {
