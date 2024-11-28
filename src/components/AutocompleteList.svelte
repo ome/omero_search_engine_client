@@ -10,7 +10,7 @@
 	{#each items as item (item)}
 		<li>
 			<label>
-				<button on:click={() => handleClick(item)}>
+				<button onclick={() => handleClick(item)}>
 					<strong>{item.key}:</strong>
 					{item.value}
 					<span style="opacity: 0.3">({item.count})</span>

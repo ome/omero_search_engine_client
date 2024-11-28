@@ -136,9 +136,6 @@ export class SearchQueryStore {
 // Single instance of the query store
 export const queryStore = new SearchQueryStore();
 
-// Selected container. E.g. {id: 123, type: "screen", name: "idr0012-fuchs-cellmorph/screenA"}
-export const selectedContainerStore = writable(null);
-
 // Selected image. E.g. {id: 123, name: "image.tiff"}
 export const selectedImageStore = writable(null);
 

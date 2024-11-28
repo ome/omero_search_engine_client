@@ -25,12 +25,13 @@
 
 	function handleDoubleClick(image) {
 		console.log('handleDoubleClick', handleDoubleClick);
-		let url = `${BASE_URL}webclient/img_detail/${image.id}`;
+		let url = image.image_url;
 		window.open(url, '_blank').focus();
 	}
 </script>
 
 {#each images as image (image.id)}
+	{@const thumb_url = image?.key_values?.find(kvp => kvp.name == 'thumb_url')?.value}
 	<div class="studyThumb" class:selected={selectedImage?.id == image.id}>
 		<a
 			aria-label="Image: {image.name}"
@@ -39,7 +40,7 @@
 			on:click|preventDefault={() => handleClick(image)}
 			on:dblclick={() => handleDoubleClick(image)}
 		>
-			<img src="{BASE_URL}webclient/render_thumbnail/{image.id}/" alt={image.name} />
+			<img src="{thumb_url}" alt={image.name} />
 		</a>
 	</div>
 {/each}

@@ -9,7 +9,8 @@
   import Nav from '../components/Nav.svelte';
   import LeftResultsPanel from '../components/LeftResultsPanel.svelte';
   import RightPanel from '../components/RightPanel.svelte';
-  import { queryStore, selectedContainerStore, selectedImageStore } from '../searchQueryStore.js';
+  import { queryStore, selectedImageStore } from '../searchQueryStore.js';
+  import { selectedContainerStore } from '../containerStore.js';
   import CentrePanel from '../components/CentrePanel.svelte';
   import { loadHierarchy } from '../util.js';
 

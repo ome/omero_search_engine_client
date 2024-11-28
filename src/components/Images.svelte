@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
   import VirtualList from 'svelte-tiny-virtual-list';
 
-  import { selectedContainerStore } from '../searchQueryStore.js';
+  import { selectedContainerStore } from '../containerStore.js';
   import { submitSearch } from '../searchengine.js';
   import ThumbnailRow from './ThumbnailRow.svelte';
   import { onMount } from 'svelte';

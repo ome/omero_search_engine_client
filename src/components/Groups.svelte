@@ -6,7 +6,7 @@
 	import { get } from 'svelte/store';
 
 	import { groupStore } from '../groupQueryStore';
-	import { queryStore, selectedContainerStore } from '../searchQueryStore.js';
+	import { selectedContainerStore } from '../containerStore.js';
 	import { getKeyValues, addKeyValueQuery } from '../searchengine.js';
 	import Images from './Images.svelte';
 

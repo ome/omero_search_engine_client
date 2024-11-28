@@ -1,57 +1,22 @@
 <script>
-  import { onMount } from 'svelte';
   import { BASE_URL } from '../searchengine.js';
-  import { selectedImageStore, queryStore, selectedContainerStore } from '../searchQueryStore.js';
-  import { getJson } from '../util.js';
+  import { selectedImageStore, queryStore } from '../searchQueryStore.js';
+  import { selectedContainerStore } from '../containerStore.js';
 
   let selectedObject = null;
-
-  let MAPR_CONFIG_BY_NS = {};
-
-  let annotations = [];
-
-  let controller;
-
-  onMount(() => {
-    let maprConigUrl = `${BASE_URL}mapr/api/config/`;
-    getJson(maprConigUrl).then((data) => {
-      var ns2menu = {};
-      Object.entries(data).forEach(([key, obj]) => {
-        ns2menu[obj.ns] = obj;
-      });
-      MAPR_CONFIG_BY_NS = ns2menu;
-    });
-  });
 
   // We reload right panel when selected object changes
   selectedImageStore.subscribe((image) => {
     let obj = { ...image, type: 'image' };
     selectedObject = obj;
-    annotations = [];
-    loadObject(obj);
   });
   selectedContainerStore.subscribe((container) => {
     if (container?.ignoreRightPanel) {
       return;
     }
     selectedObject = container;
-    annotations = [];
-    loadObject(container);
   });
 
-  async function loadObject(obj) {
-    console.log("RIGHT panel loadObject", obj);
-    if (controller) {
-      controller.abort();
-    }
-    if (!obj?.id || !obj?.type) {
-      return;
-    }
-    let url = `${BASE_URL}webclient/api/annotations/?type=map&${obj.type}=${obj.id}`;
-    controller = new AbortController();
-    let data = await getJson(url, { signal: controller.signal});
-    annotations = data.annotations;
-  }
   function titleCase(str) {
     return str.slice(0, 1).toUpperCase() + str.slice(1);
   }
@@ -74,20 +39,17 @@
     </h4>
   </div>
 
-  <div class="scrollable">
+  {#if selectedObject.key_values}
+   <div class="scrollable">
     <div class="annotations">
-      {#each annotations as ann}
         <div class="map_ann">
           <table>
-            <thead>
-              <tr title="${ann.ns}">
-                <th colspan="2"><h2>{MAPR_CONFIG_BY_NS[ann.ns]?.label || ann.ns}</h2></th>
-              </tr>
-            </thead>
             <tbody>
-              {#each ann.values as v}
+              {#each selectedObject.key_values as kvp}
+                {@const key = kvp.key || kvp.name}
+                {@const value = kvp.value}
                 <tr class="tablerow">
-                  <td>{v[0]}</td>
+                  <td>{key}</td>
                   <td>
                     {#if selectedObject.type == 'image'}
                       <!-- Link to this image with filter by KVP: ?key=Gene+Symbol&value=pax7&operator=equals -->
@@ -96,21 +58,21 @@
                         class="kvp_link"
                         on:click|preventDefault={() =>
                           queryStore.addFilter({
-                            key: v[0],
-                            value: v[1],
+                            key: key,
+                            value: value,
                             dtype: 'image',
                             operator: 'equals'
                           })}
                         title="Filter by this key-value pair"
                         href="{window.location.origin +
                           window.location
-                            .pathname}?key={v[0]}&value={v[1]}&operator=equals&show=image-{selectedObject.id}"
+                            .pathname}?key={key}&value={value}&operator=equals&show=image-{selectedObject.id}"
                       >
-                        {v[1]}
+                        {value}
                       </a>
                     {:else}
                       <!-- No link for containers yet -->
-                      {v[1]}
+                      {value}
                     {/if}
                   </td>
                 </tr>
@@ -118,9 +80,9 @@
             </tbody>
           </table>
         </div>
-      {/each}
     </div>
   </div>
+  {/if}
 {/if}
 
 <style>

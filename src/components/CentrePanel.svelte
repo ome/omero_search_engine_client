@@ -3,7 +3,8 @@
 	import VirtualList from 'svelte-tiny-virtual-list';
 
 	import { groupStore } from '../groupQueryStore';
-	import { queryStore, selectedContainerStore } from '../searchQueryStore.js';
+	import { queryStore } from '../searchQueryStore.js';
+	import { selectedContainerStore } from '../containerStore.js';
 	import { submitSearch } from '../searchengine.js';
 	import ThumbnailRow from './ThumbnailRow.svelte';
 	import CentrePanelGroups from './CentrePanelGroups.svelte';

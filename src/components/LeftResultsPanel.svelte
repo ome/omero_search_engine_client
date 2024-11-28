@@ -1,8 +1,6 @@
 <script>
-  import { onMount } from 'svelte';
-
-  import { queryStore, selectedContainerStore } from '../searchQueryStore.js';
-  import { submitSearch } from '../searchengine.js';
+  import { queryStore } from '../searchQueryStore.js';
+  import { selectedContainerStore, containerStore } from '../containerStore.js';
 
   import folder16png from '../lib/assets/folder16.png';
   import folderScreen16png from '../lib/assets/folder_screen16.png';
@@ -10,13 +8,12 @@
   let resultContainers = [];
   let selectedContainer = null;
 
-  let controller = new AbortController();
-
   queryStore.subscribeFilters((newFilters) => {
     // This is called when filters change AND when we initially subscribe
     let query = queryStore.getQuery();
     console.log('SEARCHING....', query);
-    doSearch(query);
+    // doSearch(query);
+    containerStore.loadContainers(query);
   });
   // When the selected container changes (e.g. click below OR history back/foward)
   // we need to update the filters
@@ -24,27 +21,9 @@
     selectedContainer = container;
   });
 
-  async function doSearch(query) {
-    // abort any previous requests...
-    controller.abort();
-    controller = new AbortController();
-    let containers = true;
-    let data = await submitSearch(query, containers, {signal: controller.signal});
-    console.log('Search result', data);
-    // sort results by name
-    data.results.results.sort((a, b) => a.name.localeCompare(b.name));
-    resultContainers = data.results.results;
-
-    // If we have selectedContainer (e.g. from URL), need to set the name so it can be used for
-    // center panel query (URL only gives us the id and type)
-    if (selectedContainer && !selectedContainer.name) {
-      let container = resultContainers.find((c) => c.id == selectedContainer.id && c.type == selectedContainer.type);
-      if (container) {
-        // add a flag to ignore the right panel
-        selectedContainerStore.set({...container, ignoreRightPanel: true});
-      }
-    }
-  }
+  containerStore.subscribe((containers) => {
+    resultContainers = containers;
+  });
 
   function handleClick(container) {
     console.log('Clicked', container);
