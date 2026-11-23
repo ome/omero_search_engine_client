@@ -146,13 +146,14 @@ function reset_global_variables(data) {
 
 function set_global_variables(data) {
   bookmark = data["bookmark"];
+  // {}
   raw_elasticsearch_query = data["raw_elasticsearch_query"];
   page = page + 1;
   pages_data[page] = data;
-  recieved_results = recieved_results.concat(data["values"]);
-  size = data.size;
+  recieved_results = recieved_results.concat(data["results"]["results"]);
+  size = data["results"].size;
   query_details = data["query_details"];
-  recieved_data = recieved_data + data["values"].length;
+  recieved_data = recieved_data + data["results"].length;
   var resultsbutton = document.getElementById("loadMoreResults");
   if (recieved_data >= size) {
     resultsbutton.disabled = true;
@@ -238,22 +239,32 @@ function onGridSizeChanged(params) {
 }
 
 function displayResults(data, new_data = true) {
+  console.log("displayResults data", data);
+  debugger;
   if (is_new_query == true) {
     is_new_query = false;
     reset_global_variables();
     $("#myGrid_2").empty();
   }
   if (new_data) set_global_variables(data);
-  columnDefs = data["columns_def"];
-  extend_url = data["extend_url"];
-  names_ids = data["names_ids"];
+  // columnDefs = data["columns_def"];
+  columnDefs = ["name", "dataset_id", "data_source"]
+  // extend_url = data["extend_url"];
+  // names_ids = data["names_ids"];
   for (i in data["columns_def"]) {
     if (data["columns_def"][i]["field"] === "Id")
       // && resource==="image")
       data["columns_def"][i]["cellRenderer"] = url_render;
   }
 
-  results = data["values"];
+  results = data["results"]["results"];
+
+  let html = results.map(r => `<div>
+    ${r.name} Dataset: ${r.dataset_id} Data Source: ${r.data_source}
+    <a href="${window.WEBCLIENT_URL}?show=image-${r.id}" target="_blank">Image ID: ${r.id}</a>
+  </div>`).join("");
+  document.getElementById("myGrid_2").innerHTML = html;
+  return;
 
   var gridOptions = {
     defaultColDef: {
@@ -413,15 +424,23 @@ displayResults(  data  ) })
 return;
 */
 
+  headers = {
+    "Authorization": `Bearer ${window.JWT_TOKEN }`,
+  }
+  console.log("headers", headers)
+
   //alert(submitqueryurl);
   $.ajax({
     type: "POST",
-    url: SEARCH_ENGINE_URL + "resources/submitquery/?return_columns=True",
+    // url: SEARCH_ENGINE_URL + "resources/submitquery/?return_columns=True",
+    url: SEARCH_ENGINE_URL + "resources/image/searchannotation/",
     contentType: "application/json;charset=UTF-8",
     dataType: "json",
     data: JSON.stringify(query),
+    headers: headers,
     success: function (data) {
-      if (data["Error"] != "none") {
+      console.log("searchannotation data", data);
+      if (data["Error"]) {
         alert(data["Error"]);
         return;
       }

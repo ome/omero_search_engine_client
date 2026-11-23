@@ -22,7 +22,6 @@
 import sys
 from omeroweb.settings import process_custom_settings, \
   report_settings, str_slash
-import json
 
 # load settings
 SEARCH_ENGINE_SETTINGS = {
