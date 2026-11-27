@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import json
 import requests
-from omeroweb.webclient.decorators import login_required
+from omeroweb.webclient.decorators import login_required, render_response
 
 from .app_data import get_help_file_contenets
 from . import search_engine_settings as settings
@@ -65,3 +65,26 @@ def index(request, conn=None,**kwargs):
     }
     
     return render(request, "omero_search_engine_client/main_page.html", context)
+
+@login_required()
+@render_response()
+def handle_search(request, conn=None, **kwargs):
+
+    # Temp: use hardcoded server URL for now
+    SERVER = "https://idr.openmicroscopy.org/searchengine/"
+
+    # response = requests.get(f"{SERVER}/searchengine/api/v1/resources/data_sources/")
+    # data_sources = response.json()
+
+    search_query = request.GET.get("search_query", "")
+    # needed by the base template
+    active_group = request.session.get("active_group") or conn.getEventContext().groupId
+    context = {
+        "search_engine_url": f"{SERVER}api/v1/",
+        "active_group": {'id': active_group},
+        "search_query": search_query,
+        "help_contents": get_help_file_contenets(),
+        "template": "omero_search_engine_client/webclient_based/search.html"
+    }
+    
+    return context
