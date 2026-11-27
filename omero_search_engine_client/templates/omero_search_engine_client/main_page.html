@@ -1,11 +1,22 @@
 {% extends "omero_search_engine_client/base.html" %}
 {% block title %}Client for Omero search engine - Index{% endblock %}
+
+{% block head %}
+{{ block.super }}
+<script>
+    window.JWT_TOKEN = "{{ jwt_token }}";
+    window.WEBCLIENT_URL = "{% url 'webindex' %}";
+</script>
+{% endblock %}
 {% block app_content %}
 <section class="container py-4" style="float : left;">
 
     <div class="row">
             <div class="pull-right">
-
+  <p>
+    OMERO session ID: {{ session_id }} <br>
+    JWT Token: {{ jwt_token }}
+  </p>
 
   <input class="form-check-input" type="checkbox" value="" id="commonattr">
 
